@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import com.nttdata.bootcamp.models.SavingAccount;
@@ -12,6 +13,7 @@ import com.nttdata.bootcamp.repositories.ISavingAccountRepo;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
+@EnableEurekaClient
 @Slf4j
 @SpringBootApplication
 public class BootcampServiceProductSavingaccountApplication implements CommandLineRunner{
@@ -28,7 +30,6 @@ public class BootcampServiceProductSavingaccountApplication implements CommandLi
 
 	@Override
 	public void run(String... args) throws Exception {
-		// TODO Auto-generated method stub
 		mongoTemplate.dropCollection("savingaccounts").subscribe();
 		
 		Flux.just(SavingAccount.builder()
@@ -36,8 +37,9 @@ public class BootcampServiceProductSavingaccountApplication implements CommandLi
 				.accountingBalance("100")
 				.maintenance("2")
 				.movementLimit("3")
+				.profile("none")
 				.build()).flatMap(bs->{
-						return sarepo.save(bs);
+					return sarepo.save(bs);
 				}).subscribe(s-> log.info("Se ingreso savingAccount: "+s));
 	}
 
